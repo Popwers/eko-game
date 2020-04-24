@@ -2,7 +2,7 @@ import Logo from "../UI/LogoEko";
 import ButtonNav from "../UI/ButtonNav";
 import Input from "../UI/Input";
 import Label from "../UI/Label";
-import { Spacer } from '../design/designComponents';
+import { Spacer, ContainerDiv } from '../design/designComponents';
 
 export default (props) => {
     return (
@@ -12,14 +12,16 @@ export default (props) => {
             </Spacer>
 
             <Spacer>
-                <Input
-                    onValueUpdate={props.checkPseudo}
-                    initVal={props.initInput}
-                    label="Pseudo"
-                    placeholder='Pseudo'
-                    type='text'
-                    top
-                />
+                <ContainerDiv size={40}>
+                    <Input
+                        onValueUpdate={props.checkPseudo}
+                        initVal={props.initInput}
+                        label="Pseudo"
+                        placeholder='Pseudo'
+                        type='text'
+                        top
+                    />
+                </ContainerDiv>
             </Spacer>
             
             <Spacer>

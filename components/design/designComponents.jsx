@@ -16,6 +16,7 @@ export const Spacer = styled.div`
 `
 
 export const LinkStyle = styled.a`
+    width: ${props => props.size !== null ? props.size + '%' : null};
     display: inline-block;
     text-decoration: none;
     color: ${props => props.theme.bleuFonce};
@@ -26,6 +27,7 @@ export const LinkStyle = styled.a`
     background: ${props => props.theme.white};
     letter-spacing: 0.7px;
     margin: 10px;
+    box-sizing: border-box;
     transition: color 0.3s, transform 0.3s, opacity 0.3s;
 
     &:hover {
@@ -52,4 +54,16 @@ export const LinkStyle = styled.a`
         	font-size: 1.3rem;
             padding: 30px;
         `};
+`
+
+export const Col = styled.div`
+    display: inline-block;
+    width: calc(100% / ${props => props.dividCol} );
+    box-sizing: border-box;
+`
+
+export const ContainerDiv = styled.div`
+    width: ${props => props.size}%;
+    box-sizing: border-box;
+    margin: 0 auto;
 `

@@ -1,8 +1,7 @@
 import Logo from "../UI/LogoEko";
 import ButtonNav from "../UI/ButtonNav";
-import InputCheck from "../UI/CheckBoxes";
-import Input from "../UI/Input";
-import Label from "../UI/Label";
+import CheckBoxes from "../UI/CheckBoxes";
+import RangeSlider from "../UI/RangeSlider";
 import { Spacer } from '../design/designComponents';
 
 export default (props) => {
@@ -13,35 +12,20 @@ export default (props) => {
             </Spacer>
 
             <Spacer>
-                <Input
-                    label="Pseudo"
-                    placeholder='Pseudo'
-                    type='text'
-                    top
-                /> 
-                
+                <CheckBoxes label='Nombre de joueurs max' top/>
             </Spacer>
 
             <Spacer>
-                <InputCheck label='Sélectionnez le nombre de joueurs' top/>
+                <RangeSlider label='Nombre de tours' top/>
             </Spacer>
             
             <Spacer>
-                <Label name="Mode" top>
-                    <ButtonNav
-                        to='Test'
-                        action={props.redirectTo}
-                        name='Public'
-                        big
-                    />
-
-                    <ButtonNav
-                        to='test'
-                        action={props.redirectTo}
-                        name='Privé'
-                        big
-                    />
-                </Label>
+                <ButtonNav
+                    to='privateRoomCode'
+                    action={props.redirectTo}
+                    name='Créer'
+                    big
+                />
             </Spacer>
         </>
     );

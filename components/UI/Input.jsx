@@ -3,7 +3,8 @@ import Label from "./Label";
 
 const InputText = styled.input`
     border: 4px solid ${props => props.theme.bleuFonce};
-    width: 300px;
+    width: 100%;
+    box-sizing: border-box;
     margin-bottom: 2px;
     padding: 5px 10px;
     text-align:center;    

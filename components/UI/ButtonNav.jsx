@@ -8,6 +8,7 @@ export default function ButtonNav(props) {
 
     return (
         <LinkStyle
+            size={props.size}
             href='#'
             big={props.big}
             onClick={handleClick}
