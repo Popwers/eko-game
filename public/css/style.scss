@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css?family=Chewy&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background: rgb(153, 183, 114);
+    background: -moz-linear-gradient(90deg, rgba(153, 183, 114, 1) 30%, rgba(87, 122, 124, 1) 70%);
+    background: -webkit-linear-gradient(90deg, rgba(153, 183, 114, 1) 30%, rgba(87, 122, 124, 1) 70%);
+    background: linear-gradient(90deg, rgba(153, 183, 114, 1) 30%, rgba(87, 122, 124, 1) 70%);
+}
+
+* {
+    font-size: 1.1rem;
+    font-family: 'Chewy';
+}

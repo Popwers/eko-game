@@ -1,0 +1,23 @@
+{
+  "name": "eko_game",
+  "version": "1.0.0",
+  "description": "Jeu de plateau coopératif en réseaux sur le thème de l'environnement",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "next build",
+    "start": "cross-env NODE_ENV=production node server.js"
+  },
+  "dependencies": {
+    "babel-plugin-styled-components": "^1.10.7",
+    "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "next": "latest",
+    "next-images": "^1.4.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "sass": "^1.26.3",
+    "socket.io": "^2.3.0",
+    "styled-components": "^5.1.0"
+  }
+}
