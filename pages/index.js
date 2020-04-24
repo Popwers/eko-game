@@ -53,12 +53,14 @@ export default class Index extends React.Component {
 					case 'fileAttente':
 						this.state.codePrivateRoom !== null ? this.handleTrueRedirection(link) : false;
 						break;
+
+					case 'privateRoomConfig':
+						this.handleTrueRedirection(link);
+						break;
 				}
 				break;
 			
-			case 'privateRoomConfig':
-				this.handleTrueRedirection(link);
-				break;
+			
 				
 		}
 	}

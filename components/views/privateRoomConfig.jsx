@@ -1,5 +1,6 @@
 import Logo from "../UI/LogoEko";
 import ButtonNav from "../UI/ButtonNav";
+import InputCheck from "../UI/CheckBoxes";
 import Input from "../UI/Input";
 import Label from "../UI/Label";
 import { Spacer } from '../design/designComponents';
@@ -17,7 +18,12 @@ export default (props) => {
                     placeholder='Pseudo'
                     type='text'
                     top
-                />
+                /> 
+                
+            </Spacer>
+
+            <Spacer>
+                <InputCheck label='Sélectionnez le nombre de joueurs' top/>
             </Spacer>
             
             <Spacer>
