@@ -73,3 +73,26 @@ export const LittleLabel = styled.p`
     font-size: 0.7rem;
     font-family: ${props => props.theme.secondaryFont};
 `
+export const DarkLabel = styled.p`
+    color: ${props => props.theme.bleuFonce};
+    font-size: 1.6rem;
+    font-family: ${props => props.theme.primaryFont};
+`
+
+export const WhiteLabel = styled.p`
+    color: ${props => props.theme.white};
+    font-size: 2.5rem;
+    font-family: ${props => props.theme.primaryFont};
+`
+
+export const Titre = styled.h1`
+    color: ${props => props.theme.white};
+    font-size: 2.5rem;
+    font-family: ${props => props.theme.primaryFont};
+`
+
+export const SpanDarkBlue = styled.span`
+    font-size: 2.5rem;
+    color: ${props => props.theme.bleuFonce};
+    font-family: ${props => props.theme.primaryFont};
+`

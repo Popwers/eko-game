@@ -16,7 +16,18 @@ const StyledBackground = styled.div`
     bottom: 0;
     display: flex;
     justify-content: space-between;
-    transition: filter 0.3s;
+
+    &:after {
+        content: '';
+        opacity: 0;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.3);
+        transition: opacity 0.5s;
+    }
 
     div {
         position: relative;
@@ -148,7 +159,9 @@ const StyledBackground = styled.div`
     ${props =>
         props.blur &&
         css`
-        	filter: blur(4px);
+        	&:after {
+                opacity: 1;
+            }
         `};
 `;
 
