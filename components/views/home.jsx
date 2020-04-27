@@ -27,7 +27,7 @@ export default (props) => {
             <Spacer>
                 <Label name="Mode" top>
                     <ButtonNav
-                        to='fileAttente'
+                        to='equipeChoose'
                         action={props.redirectTo}
                         name='Public'
                         disabled={props.buttonStat}

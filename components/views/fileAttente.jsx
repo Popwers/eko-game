@@ -2,6 +2,7 @@ import Logo from "../UI/LogoEko";
 import ButtonNav from "../UI/ButtonNav";
 import Input from "../UI/Input";
 import Label from "../UI/Label";
+import NbrJoueurs from "../UI/IndiceNbrJoueurs";
 import { Spacer } from '../design/designComponents';
 
 export default (props) => {
@@ -12,31 +13,13 @@ export default (props) => {
             </Spacer>
 
             <Spacer>
-                <Input
-                    label="Pseudo"
-                    placeholder='Pseudo'
-                    type='text'
-                    top
+                <NbrJoueurs
+                    JoueursCo={2}
+                    // nbrJoueursTotal={6}
                 />
             </Spacer>
             
-            <Spacer>
-                <Label name="Mode" top>
-                    <ButtonNav
-                        to='Test'
-                        action={props.redirectTo}
-                        name='Public'
-                        big
-                    />
 
-                    <ButtonNav
-                        to='test'
-                        action={props.redirectTo}
-                        name='Privé'
-                        big
-                    />
-                </Label>
-            </Spacer>
         </>
     );
 }

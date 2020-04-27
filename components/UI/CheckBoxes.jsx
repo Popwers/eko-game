@@ -73,10 +73,20 @@ const Checkmark = styled.span`
 `;
 
 function CheckBox(props) {
+	function handleChange(event) {
+		if (props.handleChangeVal) props.handleChangeVal(Number(event.target.value));
+	}
+
 	return (
 		<ContainerLabel>
 			{props.name}
-			<InputHide type="radio" name={props.select} value={props.value} />
+			<InputHide 
+				type="radio" 
+				name={props.select} 
+				value={props.value} 
+				onChange={handleChange}
+				checked={props.checked === props.value ? 'checked' : null} />
+
 			<Checkmark className="checkmark"></Checkmark>
 		</ContainerLabel>
 	);
@@ -84,10 +94,27 @@ function CheckBox(props) {
 
 export default (props) => {
 	return (
-		<Label name={props.label} top={props.top}>
-			<CheckBox name='4' value={4} select='nbJoueur' />
-			<CheckBox name='6' value={6} select='nbJoueur' />
-			<CheckBox name='8' value={8} select='nbJoueur' />
+		<Label name={props.label} top={props.top} >
+			<CheckBox 
+				handleChangeVal={props.handleChangeVal} 
+				name='4' 
+				value={4} 
+				select='nbJoueur' 
+				checked={props.setChecked} />
+
+			<CheckBox 
+				handleChangeVal={props.handleChangeVal} 
+				name='6' 
+				value={6} 
+				select='nbJoueur'
+				checked={props.setChecked} />
+
+			<CheckBox 
+				handleChangeVal={props.handleChangeVal} 
+				name='8' 
+				value={8} 
+				select='nbJoueur'
+				checked={props.setChecked} />
 		</Label>
 	);
 };

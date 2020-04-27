@@ -9,6 +9,8 @@ export const theme = {
     greenFonce: '#6EAA43',
     green: '#99B772',
     greenClaire: '#C4D69D',
+    primaryFont: "'Chewy', cursive",
+    secondaryFont: "'Josefin Sans', sans-serif", 
 };
 
 export const RootApp = styled.div`

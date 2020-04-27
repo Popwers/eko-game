@@ -11,6 +11,9 @@ export default class Index extends React.Component {
 
 	/* Définis les props initiales */
 	static defaultProps = {
+		initialeEquipe: null,
+		initialeNombreTours: 4,
+		initialeNombreJoueurs: 4,
 		initailBlurBackground: false,
 		initialCodePrivateRoom: null,
 		initialPseudo: null,
@@ -20,7 +23,10 @@ export default class Index extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			equipeChoose: props.initialeEquipe, 
 			blurBackground: props.initailBlurBackground,
+			nombreTourMax: props.initialeNombreTours,
+			nombreJoueur: props.initialeNombreJoueurs,
 			codePrivateRoom: props.initialCodePrivateRoom,
 			pseudo: props.initialPseudo,
 			currentLink: props.initialLink,
@@ -42,7 +48,7 @@ export default class Index extends React.Component {
 			case 'home':
 				switch (link) {
 					case 'privateRoom':
-					case 'fileAttente':
+					case 'equipeChoose':
 						this.state.pseudo !== null ? this.handleTrueRedirection(link) : false;
 						break;
 				}
@@ -50,7 +56,7 @@ export default class Index extends React.Component {
 
 			case 'privateRoom':
 				switch (link) {
-					case 'fileAttente':
+					case 'equipeChoose':
 						this.state.codePrivateRoom !== null ? this.handleTrueRedirection(link) : false;
 						break;
 
@@ -60,8 +66,29 @@ export default class Index extends React.Component {
 				}
 				break;
 			
-			
+			case 'privateRoomConfig':
+				switch (link) {
+					case 'privateRoomCode':
+						this.handleTrueRedirection(link);
+						break;
+				}
+				break;
+
+			case 'privateRoomCode':
+				switch (link) {
+					case 'equipeChoose':
+						this.handleTrueRedirection(link);
+						break;
+				}
+				break;	
 				
+			case 'equipeChoose':
+				switch (link) {
+					case 'fileAttente':
+						this.state.equipeChoose !== null ? this.handleTrueRedirection(link) : false;
+						break;
+				}
+				break;	
 		}
 	}
 
@@ -108,6 +135,26 @@ export default class Index extends React.Component {
 		});
 	}
 
+	/* Fonction de mise à jours du Nombre de joueur sur PrivateRoom */
+	handleChangeNombreJoueur = (newJoueurs) => {
+		this.setState({
+			nombreJoueur: newJoueurs
+		});
+	}
+
+	/* Fonction de mise à jours du nombre de tours max sur PrivateRoom */
+	handleChangeToursMax = (newTours) => {
+		this.setState({
+			nombreTourMax: newTours
+		});
+	}
+
+	handleChangeEquipe = (newEquipe) => {
+		this.setState({
+			equipeChoose: newEquipe
+		});
+	}
+
 	render() {
 		let form = null;
 
@@ -133,15 +180,23 @@ export default class Index extends React.Component {
 				break;
 
 			case 'privateRoomConfig':
-				form = <PrivateRoomConfig redirectTo={this.handleRedirect} />;
+				form = <PrivateRoomConfig initRange={this.state.nombreTourMax}
+										  initCheck={this.state.nombreJoueur}
+										  redirectTo={this.handleRedirect}
+										  changeTourMax={this.handleChangeToursMax}
+										  changeJoueursMax={this.handleChangeNombreJoueur} />;
 				break;
 
 			case 'privateRoomCode':
-				form = <PrivateRoomCode redirectTo={this.handleRedirect} />;
+				form = <PrivateRoomCode initInput={this.state.codePrivateRoom}
+										redirectTo={this.handleRedirect} />;
 				break;
 
 			case 'equipeChoose':
-				form = <EquipeChoose redirectTo={this.handleRedirect} />;
+				form = <EquipeChoose choseEquipe={this.handleChangeEquipe}
+									 redirectTo={this.handleRedirect}
+									 initialChooseE={this.state.equipeChoose}
+									 buttonStat={this.state.equipeChoose === null ? true : false} />;
 				break;
 
 			case 'fileAttente':

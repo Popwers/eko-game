@@ -1,8 +1,7 @@
 import Logo from "../UI/LogoEko";
 import ButtonNav from "../UI/ButtonNav";
 import Input from "../UI/Input";
-import Label from "../UI/Label";
-import { Spacer } from '../design/designComponents';
+import { Spacer, ContainerDiv, LittleLabel } from '../design/designComponents';
 
 export default (props) => {
     return (
@@ -12,30 +11,25 @@ export default (props) => {
             </Spacer>
 
             <Spacer>
-                <Input
-                    label="Pseudo"
-                    placeholder='Pseudo'
-                    type='text'
-                    top
-                />
+                <ContainerDiv size={30}>
+                    <Input
+                        label="Code de votre partie"
+                        type='text'
+                        initVal={props.initInput}
+                        readOnly
+                        top
+                    />
+                    <LittleLabel>Cliquer pour copier</LittleLabel>
+                </ContainerDiv>
             </Spacer>
             
             <Spacer>
-                <Label name="Mode" top>
-                    <ButtonNav
-                        to='Test'
-                        action={props.redirectTo}
-                        name='Public'
-                        big
-                    />
-
-                    <ButtonNav
-                        to='test'
-                        action={props.redirectTo}
-                        name='Privé'
-                        big
-                    />
-                </Label>
+                <ButtonNav
+                    to='equipeChoose'
+                    action={props.redirectTo}
+                    name='Choix du camp'
+                    big
+                />
             </Spacer>
         </>
     );

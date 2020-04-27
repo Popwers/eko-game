@@ -67,3 +67,9 @@ export const ContainerDiv = styled.div`
     box-sizing: border-box;
     margin: 0 auto;
 `
+
+export const LittleLabel = styled.p`
+    color: ${props => props.theme.white};
+    font-size: 0.7rem;
+    font-family: ${props => props.theme.secondaryFont};
+`

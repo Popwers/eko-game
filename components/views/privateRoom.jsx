@@ -38,7 +38,7 @@ export default (props) => {
                         <Col dividCol={3}>
                             <ButtonNav
                                 size={100}
-                                to='fileAttente'
+                                to='equipeChoose'
                                 action={props.redirectTo}
                                 name='Jouer'
                                 disabled={props.buttonStat}

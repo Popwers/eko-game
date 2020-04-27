@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Label from "./Label";
 
 const InputText = styled.input`
@@ -12,11 +12,25 @@ const InputText = styled.input`
     border-radius: 8px;
     font-size: 1rem;
     box-shadow: 0px 4px 8px #00000054;
-    transition: border 0.5s;
+    transition: border 0.5s, transform 0.3s;
 
     &:active, &:focus {
         border: 4px solid ${props => props.theme.bleuClaire};
     }
+
+    ${props =>
+        props.cssReadOnly &&
+        css`
+            border: 4px solid ${props => props.theme.white};
+        	background: transparent;
+            color: ${props => props.theme.white};
+            font-size: 2rem;
+            cursor: pointer;
+
+            &:active {
+                transform: scale(0.9);
+            }
+        `};
 `
 
 export default function Input(props) {
@@ -24,9 +38,23 @@ export default function Input(props) {
         if (props.onValueUpdate) props.onValueUpdate(event.target.value);
     }
 
+    function handleClick(event) {
+        if (props.readOnly) {
+            event.target.select();
+            document.execCommand('copy');
+            return false;
+        }
+    }
+
     return (
         <Label name={props.label} top={props.top}>
-            <InputText value={props.initVal !== null ? props.initVal : ''} placeholder={props.placeholder} type={props.type} onChange={handleChange}/>
+            <InputText 
+                cssReadOnly={props.readOnly}
+                value={props.initVal !== null ? props.initVal : ''} 
+                placeholder={props.placeholder} 
+                type={props.type}
+                onClick={handleClick}
+                onChange={handleChange} />
         </Label>
     )
 }

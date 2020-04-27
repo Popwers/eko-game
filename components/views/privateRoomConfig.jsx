@@ -2,7 +2,7 @@ import Logo from "../UI/LogoEko";
 import ButtonNav from "../UI/ButtonNav";
 import CheckBoxes from "../UI/CheckBoxes";
 import RangeSlider from "../UI/RangeSlider";
-import { Spacer } from '../design/designComponents';
+import { Spacer, ContainerDiv } from '../design/designComponents';
 
 export default (props) => {
     return (
@@ -12,11 +12,13 @@ export default (props) => {
             </Spacer>
 
             <Spacer>
-                <CheckBoxes label='Nombre de joueurs max' top/>
+                <CheckBoxes handleChangeVal={props.changeJoueursMax} setChecked={props.initCheck} label='Nombre de joueurs max' top/>
             </Spacer>
 
             <Spacer>
-                <RangeSlider label='Nombre de tours' top/>
+                <ContainerDiv size={40}>
+                    <RangeSlider handleChangeVal={props.changeTourMax} setInitRange={props.initRange} label='Nombre de tours' top />
+                </ContainerDiv>
             </Spacer>
             
             <Spacer>
@@ -24,7 +26,7 @@ export default (props) => {
                     to='privateRoomCode'
                     action={props.redirectTo}
                     name='Créer'
-                    big
+                    size={10}
                 />
             </Spacer>
         </>
