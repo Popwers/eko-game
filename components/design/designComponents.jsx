@@ -76,18 +76,21 @@ export const LittleLabel = styled.p`
 export const DarkLabel = styled.p`
     color: ${props => props.theme.bleuFonce};
     font-size: 1.6rem;
+    margin: 5px 0;
     font-family: ${props => props.theme.primaryFont};
 `
 
 export const WhiteLabel = styled.p`
     color: ${props => props.theme.white};
-    font-size: 2.5rem;
+    font-size: 2rem;
+    margin: 0;
     font-family: ${props => props.theme.primaryFont};
 `
 
+
 export const Titre = styled.h1`
     color: ${props => props.theme.white};
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-family: ${props => props.theme.primaryFont};
 `
 
@@ -96,3 +99,14 @@ export const SpanDarkBlue = styled.span`
     color: ${props => props.theme.bleuFonce};
     font-family: ${props => props.theme.primaryFont};
 `
+export const ContainerIndice = styled.div`
+    position: fixed;
+    z-index: 10;
+    top: 2%;
+    left: 3%;
+`
+ export const Hr = styled.hr`
+        background-color: ${props => props.theme.white};
+        width: 15%;
+        margin: 0 auto;
+ `

@@ -4,7 +4,8 @@ import Input from "../UI/Input";
 import Label from "../UI/Label";
 import NbrJoueurs from "../UI/IndiceNbrJoueurs";
 import TitrePage from "../UI/TitrePage";
-import { Spacer } from '../design/designComponents';
+import ListeEquipe from "../UI/ListeEquipe";
+import { Spacer, Hr } from '../design/designComponents';
 
 export default (props) => {
     return (
@@ -24,6 +25,11 @@ export default (props) => {
                 <TitrePage
                     codeRoom='#IEIIA'
                 />
+                <Hr/>
+            </Spacer>
+
+            <Spacer>
+                <ListeEquipe/>
             </Spacer>
             
 
