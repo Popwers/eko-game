@@ -87,7 +87,6 @@ export const WhiteLabel = styled.p`
     font-family: ${props => props.theme.primaryFont};
 `
 
-
 export const Titre = styled.h1`
     color: ${props => props.theme.white};
     font-size: 2rem;

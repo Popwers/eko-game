@@ -65,7 +65,7 @@ export default function ListeEquipe(props){
                 </TitreListeP>
                 <Liste>
                     <Li>Valentin le faible</Li>
-                    <Li>Fé bour Clodi</Li>
+                    <Li>sale nwar</Li>
                     <Li>...</Li>
                     <Li>...</Li> 
                 </Liste>

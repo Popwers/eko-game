@@ -24,6 +24,10 @@ app.prepare().then(() => {
 	const server = http.createServer(serverApp);
 	const io = require("socket.io")(server);
 
+	serverApp.get('/jeu', (req, res) => {
+		return app.render(req, res, "/jeu", req.query);
+	});
+
 	// Route qui écoute : Renvoie vers la page demandé ou 404
 	// Ici je l'ai modifié pour toujours retournée a l'index pour l'instant
 	serverApp.all("*", (req, res) => {
