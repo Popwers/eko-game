@@ -3,7 +3,8 @@ import Label from "./Label";
 
 const InputText = styled.input`
     border: 4px solid ${props => props.theme.bleuFonce};
-    width: 100%;
+    width: ${props => props.width ? props.width + 'px' : '100%'};
+    height: ${props => props.height ? props.height + 'px' : 'initiale'};
     box-sizing: border-box;
     margin-bottom: 2px;
     padding: 5px 10px;
@@ -49,6 +50,8 @@ export default function Input(props) {
     return (
         <Label name={props.label} top={props.top}>
             <InputText 
+                width={props.width}
+                height={props.height}
                 cssReadOnly={props.readOnly}
                 value={props.initVal !== null ? props.initVal : ''} 
                 placeholder={props.placeholder} 

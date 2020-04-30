@@ -16,16 +16,7 @@ export const theme = {
 export const RootApp = styled.div`
     position: relative;
     z-index: 1;
-    height: 100vh;
-
-    -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000;
-    -webkit-transform: translate3d(0,0,0);
-    -webkit-transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000;
-    transform: translate3d(0,0,0);
-    transform: translateZ(0);
+    min-height: 100vh;
     
     ${props =>
         props.center &&

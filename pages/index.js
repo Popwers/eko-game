@@ -6,6 +6,7 @@ import PrivateRoomConfig from '../components/views/privateRoomConfig';
 import PrivateRoomCode from '../components/views/privateRoomCode';
 import EquipeChoose from '../components/views/equipeChoose';
 import FileAttente from '../components/views/fileAttente';
+import SocketClient from "../lib/socketClient";
 
 export default class Index extends React.Component {
 
@@ -14,18 +15,22 @@ export default class Index extends React.Component {
 		initialeEquipe: null,
 		initialeNombreTours: 4,
 		initialeNombreJoueurs: 4,
+		initialenombreJoueurCo: 0,
 		initailBlurBackground: false,
 		initialCodePrivateRoom: null,
 		initialPseudo: null,
 		initialLink: 'home',
+		stat: false,
 	}
 
 	constructor(props) {
 		super(props);
 		this.state = {
+			statut: props.stat,
 			equipeChoose: props.initialeEquipe, 
 			blurBackground: props.initailBlurBackground,
 			nombreTourMax: props.initialeNombreTours,
+			nombreJoueurCo: props.initialenombreJoueurCo,
 			nombreJoueur: props.initialeNombreJoueurs,
 			codePrivateRoom: props.initialCodePrivateRoom,
 			pseudo: props.initialPseudo,
@@ -33,11 +38,16 @@ export default class Index extends React.Component {
 		};
 
 		this.history = [];
+		this.socketClient = new SocketClient();
 	}
 
-	/* A la création du composant attache l'événement 'popstate' pour gérer le retour navigateur */
+	/* A la création du composant attache l'événement 'popstate' pour gérer le retour navigateur
+	/* Attache les évenements de connexion avec le serveur */
 	componentDidMount() {
 		window.addEventListener("popstate", this.handlePopState);
+		this.socketClient.subscribtoConnexion((err, data) => this.setState({
+			statut: data,
+		}));
 	}
 
 	/* Fonction de attaché au tous lien, pour vérifier les datas envoyées
@@ -149,6 +159,7 @@ export default class Index extends React.Component {
 		});
 	}
 
+	/* Fonction de mise à jours de l'équipe choisis */
 	handleChangeEquipe = (newEquipe) => {
 		this.setState({
 			equipeChoose: newEquipe
@@ -200,7 +211,10 @@ export default class Index extends React.Component {
 				break;
 
 			case 'fileAttente':
-				form = <FileAttente redirectTo={this.handleRedirect} />;
+				form = <FileAttente redirectTo={this.handleRedirect}
+									codeRoom={this.state.codePrivateRoom}
+									NbrJoueursCo={this.state.nombreJoueurCo}
+									NbrJoueursMax={this.state.nombreJoueur} />;
 				break;
 
 			default:
@@ -210,6 +224,7 @@ export default class Index extends React.Component {
 
 		return (
 			<Container center blur={this.state.blurBackground} >
+				<p>Statut de connexion: {this.state.statut ? 'en ligne' : 'hors ligne'}</p>
 				{form}
 			</Container>
 		)

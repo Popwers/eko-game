@@ -24,21 +24,24 @@ app.prepare().then(() => {
 	const server = http.createServer(serverApp);
 	const io = require("socket.io")(server);
 
-	serverApp.get('/jeu', (req, res) => {
+	server.get('/jeu', (req, res) => {
 		return app.render(req, res, "/jeu", req.query);
 	});
 
 	// Route qui écoute : Renvoie vers la page demandé ou 404
 	// Ici je l'ai modifié pour toujours retournée a l'index pour l'instant
-	serverApp.all("*", (req, res) => {
+	server.all("*", (req, res) => {
 		//return handle(req, res);
 		return app.render(req, res, "/index", req.query);
 	});
 
-	io.on("connection", (socket) => {
+	io.on("connection", (clientSocket) => {
 		console.log("Nouveau joueur connecté");
 
-		socket.on("createGame", function () {
+		clientSocket.emit('connexion');
+
+
+		clientSocket.on("createGame", function () {
 			console.log("user want partie");
 
 			var data = {
@@ -46,10 +49,10 @@ app.prepare().then(() => {
 				joueur: createUrl(5),
 			};
 
-			partiesEnCours.push(new Partie(app, socket, data));
+			partiesEnCours.push(new Partie(app, clientSocket, data));
 		});
 
-		socket.on('joinPublicGame', (player, callback) => {
+		clientSocket.on('joinPublicGame', (player, callback) => {
 			const equipe = player.equipe;
 			const name = player.name;
 			let room = null;

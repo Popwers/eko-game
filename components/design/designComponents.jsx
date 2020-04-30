@@ -91,6 +91,7 @@ export const Titre = styled.h1`
     color: ${props => props.theme.white};
     font-size: 2rem;
     font-family: ${props => props.theme.primaryFont};
+    margin: 0 0 25px 0;
 `
 
 export const SpanDarkBlue = styled.span`
@@ -106,6 +107,18 @@ export const ContainerIndice = styled.div`
 `
  export const Hr = styled.hr`
         background-color: ${props => props.theme.white};
-        width: 15%;
+        width: 25%;
         margin: 0 auto;
+        color: ${props => props.theme.white};
+        height: 4px;
+        border-radius: 20px;
+        border: none;
  `
+
+export const PetitTitre = styled.p`
+    color: ${props => props.theme.bleuFonce};
+    font-size: 1.3rem;
+    font-weight: 300;
+    font-family: ${props => props.theme.secondaryFont};
+    margin: 0;
+`

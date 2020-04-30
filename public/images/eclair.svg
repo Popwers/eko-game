@@ -1,10 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="31" height="119" viewBox="0 0 31 119">
-  <defs>
-    <clipPath id="clip-éclair">
-      <rect width="31" height="119"/>
-    </clipPath>
-  </defs>
-  <g id="éclair" clip-path="url(#clip-éclair)">
-    <path id="Tracé_19" data-name="Tracé 19" d="M1090.833,1348l-19.406,55.416,17.756-11.961-22.758,70.193" transform="translate(-1063.926 -1345.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="5"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="31" height="119"><defs><clipPath id="a"><path d="M0 0H31V119H0z"/></clipPath></defs><g clip-path="url(#a)"><path data-name="Tracé 19" d="M26.907 2.5L7.501 57.916l17.756-11.961-22.758 70.193" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="5"/></g></svg>

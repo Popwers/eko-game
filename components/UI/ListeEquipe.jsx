@@ -1,26 +1,17 @@
-import { Spacer, Col } from '../design/designComponents';
-import styled, { css } from 'styled-components';
-import Eclair from '../../public/images/eclair.svg'
+import { Col } from '../design/designComponents';
+import styled from 'styled-components';
+import Eclair from '../../public/images/eclair.svg';
+import Liste from '../UI/Liste';
 
 const ContainerListes = styled.div`
-    width:70%;
+    width: 70%;
     margin: 0 auto;
-`
-
-const Liste = styled.ul`
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    color: ${props => props.theme.white};
-    font-size: 1.6rem; 
-`
-
-const Li = styled.li`
-    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `
 const Separateur = styled.img`
-    width: 20%;
+    height: 200px;
 `
 
 const TitreListeE = styled.p`
@@ -42,6 +33,12 @@ const TitreListeP = styled.p`
     
 `
 
+const ColCenter = styled(Col)`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
 export default function ListeEquipe(props){
     return(
         <ContainerListes>
@@ -49,26 +46,16 @@ export default function ListeEquipe(props){
                 <TitreListeE>
                     Les Ecolos
                 </TitreListeE>
-                <Liste>
-                    <Li>Lionel</Li>
-                    <Li>Rohan</Li>
-                    <Li>...</Li>
-                    <Li>...</Li>                    
-                </Liste>
+                <Liste array={props.array} nbrJoueursMax={props.nombreJoueursMax} />
             </Col>
-            <Col dividCol={3}>
+            <ColCenter dividCol={3}>
                 <Separateur src={Eclair}/>
-            </Col>
+            </ColCenter>
             <Col dividCol={3}>
                 <TitreListeP>
                     Les Pollueurs
                 </TitreListeP>
-                <Liste>
-                    <Li>Valentin le faible</Li>
-                    <Li>sale nwar</Li>
-                    <Li>...</Li>
-                    <Li>...</Li> 
-                </Liste>
+                <Liste array={props.array} nbrJoueursMax={props.nombreJoueursMax} />
             </Col>
         </ContainerListes>
     )

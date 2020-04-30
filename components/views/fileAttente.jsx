@@ -1,7 +1,4 @@
 import Logo from "../UI/LogoEko";
-import ButtonNav from "../UI/ButtonNav";
-import Input from "../UI/Input";
-import Label from "../UI/Label";
 import NbrJoueurs from "../UI/IndiceNbrJoueurs";
 import TitrePage from "../UI/TitrePage";
 import ListeEquipe from "../UI/ListeEquipe";
@@ -10,29 +7,25 @@ import { Spacer, Hr } from '../design/designComponents';
 export default (props) => {
     return (
         <>
+            <NbrJoueurs
+                JoueursCo={props.NbrJoueursCo}
+                JoueursTotal={props.NbrJoueursMax}
+            />
+
             <Spacer>
                 <Logo />
             </Spacer>
 
             <Spacer>
-                <NbrJoueurs
-                    JoueursCo={2}
-                    JoueursTotal={6}
-                />
-            </Spacer>
-
-            <Spacer>
                 <TitrePage
-                    codeRoom='#IEIIA'
+                    codeRoom={props.codeRoom}
                 />
                 <Hr/>
             </Spacer>
 
             <Spacer>
-                <ListeEquipe/>
+                <ListeEquipe nombreJoueursMax={props.NbrJoueursMax} />
             </Spacer>
-            
-
         </>
     );
 }
