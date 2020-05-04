@@ -1,16 +1,20 @@
 import styled, { css } from 'styled-components';
 import CarteDos from '../../public/images/jeu/dos_carte.svg';
+import Quizz from './Quizz';
 
 // rotation: 0;
 
 const ContainerCarte = styled.div`
-    width:139px;
-    height: 227px;
+    position: absolute;
+    top: 30vh;
+    z-index: 20;
+    width:278px;
+    height: 454px;
     perspective: 1000px;
     border-radius: 10px;
 `
 
-const InnerCarte = styled.div`
+let InnerCarte = styled.div`
     position: relative;
     width: 100%;
     height: 100%;
@@ -31,8 +35,10 @@ const DosCarte = styled.div`
     backface-visibility: hidden;
 `
 
+//url(${props => props.CarteColor})
+
 const FaceCarte = styled.div`
-    background: url(${props => props.CarteColor});
+    background: ${props => props.theme.greenClaire};
     border-radius: 10px;
     width: 100%;
     height: 100%;
@@ -44,21 +50,37 @@ const FaceCarte = styled.div`
 
 export default function Carte(props){
 
-    function flip(){
-    //    rotation = 180;
+    let rot = 180;
+
+    function flip() {
+        // rot = 180;
+        // alert(rot);
+        
     }
 
+    let question = "Pour produire de l'électricité il faut :";
+
+    let reponses = ['Un aimant', 'Une bobine de cuivre', "Un mouvement (de l'énergie cinétique)", "de l'énergie de position"];    
+    
 
     return(
        
 
         <ContainerCarte>
 
-            <InnerCarte>
+            <InnerCarte rotation={rot} >
 
                 <DosCarte  onClick={flip}/>
 
                 <FaceCarte>
+                    <Quizz
+                    question = {question}
+
+                    reponse1 = {reponses[0]}
+                    reponse2 = {reponses[1]}
+                    reponse3 = {reponses[2]}
+                    reponse4 = {reponses[3]}
+                    />
                 </FaceCarte>
 
             </InnerCarte>

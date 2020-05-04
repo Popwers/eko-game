@@ -25,23 +25,35 @@ export default (props) => {
             </Spacer>
             
             <Spacer>
-                <Label name="Mode" top>
+                {props.haveCode == true &&
                     <ButtonNav
                         to='equipeChoose'
                         action={props.redirectTo}
-                        name='Public'
+                        name='Jouer'
                         disabled={props.buttonStat}
                         big
                     />
+                }
 
-                    <ButtonNav
-                        to='privateRoom'
-                        action={props.redirectTo}
-                        name='Privé'
-                        disabled={props.buttonStat}
-                        big
-                    />
-                </Label>
+                {props.haveCode == false &&
+                    <Label name="Mode" top>
+                        <ButtonNav
+                            to='equipeChoose'
+                            action={props.redirectTo}
+                            name='Public'
+                            disabled={props.buttonStat}
+                            big
+                        />
+
+                        <ButtonNav
+                            to='privateRoom'
+                            action={props.redirectTo}
+                            name='Privé'
+                            disabled={props.buttonStat}
+                            big
+                        />
+                    </Label>
+                }
             </Spacer>
         </>
     );

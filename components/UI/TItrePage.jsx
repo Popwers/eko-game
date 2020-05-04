@@ -15,14 +15,16 @@ export default function TitrePage(props){
                 File d'attente &nbsp;
             </SpanDarkBlue>
             Partie
-            <Input
-                type='text'
-                initVal={props.codeRoom}
-                readOnly
-                top
-                width={130}
-                height={50}
-            />
+            {props.codeRoom != null &&
+                <Input
+                    type='text'
+                    initVal={props.codeRoom}
+                    readOnly
+                    top
+                    width={130}
+                    height={50}
+                />
+            }
         </TitreSpe>
     )
 }

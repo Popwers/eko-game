@@ -1,25 +1,3 @@
-/*class Partie {
-    constructor(app, socket, data) {
-        this.app = app;
-        this.socket = socket;
-        this.linkPlateau = data.plateau;
-        this.linkJoueur = data.joueur;
-
-        socket.emit("newGame", data);
-
-        this.app.get("/" + this.linkJoueur, function (req, res) {
-            res.sendFile(__dirname + "/public/front/joueur.html");
-        });
-
-        this.app.get("/" + this.linkPlateau, function (req, res) {
-            res.sendFile(__dirname + "/public/front/plateau.html");
-        });
-    }
-}
-
-module.exports = Partie;*/
-
-
 class Partie {
     constructor(nbrJoueurMax, nbrTourMax) {
         this.code = createUrl(5);
@@ -38,7 +16,7 @@ class Partie {
         if (this.listeEcologiste.length < this.nbrJoueurMax / 2) {
             // Il reste une place
             this.listeEcologiste.push(joueur);
-            this.verifierDebut();
+            this.checkGameReady();
             return this;
         } else {
             // Il n'y a plus de place dans cette partie pour les Ecolos
@@ -50,23 +28,11 @@ class Partie {
         if (this.listePollueur.length < this.nbrJoueurMax / 2) {
             // Il reste une place chez les polleur
             this.listePollueur.push(joueur);
-            this.verifierDebut();
+            this.checkGameReady();
             return this;
         } else {
             // Il n'y a plus de place dans cette partie pour les polleur
             return null;
-        }
-    }
-
-    verifierDebut() {
-
-        if (this.listeEcologiste.length + this.listePollueur.length === this.nbrJoueurMax) {
-            this.isReady = true;
-
-            //On assign le premier joueur a jouer
-            // TODO : modifier la regle de choix du 1er joueur
-            this.joueurEnCours = this.listeEcologiste[0];
-
         }
     }
 
@@ -75,6 +41,19 @@ class Partie {
         this.listePollueur = this.listePollueur.filter(item => item !== playersName);
     }
 
+    checkGameReady() {
+        if (this.listeEcologiste.length + this.listePollueur.length === this.nbrJoueurMax) {
+            this.isReady = true;
+
+            //On assign le premier joueur a jouer
+            // TODO : modifier la regle de choix du 1er joueur
+            this.joueurEnCours = this.listeEcologiste[0];
+        }
+    }
+
+
+
+    
 
     choixEpreuve(caseFinale) {
 

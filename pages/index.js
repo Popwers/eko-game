@@ -8,7 +8,9 @@ import PrivateRoomCode from '../components/views/privateRoomCode';
 import EquipeChoose from '../components/views/equipeChoose';
 import FileAttente from '../components/views/fileAttente';
 import SocketClient from "../lib/socketClient";
-export default class Index extends React.Component {
+import { LittleLabel } from "../components/design/designComponents";
+
+class Index extends React.Component {
 
 	/* Définis les props initiales */
 	static defaultProps = {
@@ -22,10 +24,23 @@ export default class Index extends React.Component {
 		initialLink: 'home',
 		stat: false,
 		initialList: [],
+		initialcheckPseudo: false,
+		initialcheckPrivateRoom: false,
+	}
+
+	static getInitialProps({ query }) {
+		return { query }
 	}
 
 	constructor(props) {
 		super(props);
+
+		let getCode = this.props.query.codePartie;
+		let haveCodePartie = null;
+		if (!(getCode == "")) {
+			haveCodePartie = this.props.query.codePartie;
+		}
+
 		this.state = {
 			statut: props.stat,
 			equipeChoose: props.initialeEquipe, 
@@ -33,11 +48,13 @@ export default class Index extends React.Component {
 			nombreTourMax: props.initialeNombreTours,
 			nombreJoueurCo: props.initialenombreJoueurCo,
 			nombreJoueurMax: props.initialeNombreJoueurMaxs,
-			codePrivateRoom: props.initialCodePrivateRoom,
+			codePrivateRoom: haveCodePartie != null ? haveCodePartie : props.initialCodePrivateRoom,
 			pseudo: props.initialPseudo,
 			currentLink: props.initialLink,
 			listEcolos: props.initialList,
 			listPollueurs: props.initialList,
+			checkPseudo: props.initalcheckPseudo,
+			checkPrivateRoom: props.initalcheckPrivateRoom,
 		};
 
 		this.history = [];
@@ -48,17 +65,17 @@ export default class Index extends React.Component {
 	/* Attache les évenements de connexion avec le serveur */
 	componentDidMount() {
 		window.addEventListener("popstate", this.handlePopState);
+
 		this.socketClient.subscribeConnexion((data) => {
 			this.setState({
 				statut: data,
 			});
 
-			const dataToServer = { name: 'null', code: 'null' };
+			const dataToServer = { name: 'null', code: this.state.codePrivateRoom };
 			return dataToServer;
 		});
 
 		this.socketClient.subscribePlayersStats(data => {
-			console.log(data);
 			this.setState({
 				nombreJoueurCo: data.NbrJoueursCo,
 				listEcolos: data.listEcolos,
@@ -66,13 +83,14 @@ export default class Index extends React.Component {
 			});
 		});
 
-		this.socketClient.subscribeStartGame(() => {
+		this.socketClient.subscribeGameReady(() => {
 			Router.push({ 
 				pathname: '/jeu', 
 				query: {
 					codePartie: this.state.codePrivateRoom,
 					pseudo: this.state.pseudo,
-				}
+				},
+				shallow: true,
 			});
 		});
 	}
@@ -83,18 +101,39 @@ export default class Index extends React.Component {
 	handleRedirect = (link) => {
 		switch (this.state.currentLink) {
 			case 'home':
-				switch (link) {
-					case 'privateRoom':
-					case 'equipeChoose':
-						this.state.pseudo !== null ? this.handleTrueRedirection(link) : false;
-						break;
+				if (link == 'privateRoom') {
+					this.setState({
+						checkPrivateRoom: true,
+					});
+				} else {
+					this.setState({
+						checkPrivateRoom: false,
+					});
+				}
+
+				if (this.state.pseudo != null && !this.state.checkPseudo) {
+					this.socketClient.checkPseudo(this.state.pseudo, data => {
+						if (data) {
+							this.setState({
+								checkPseudo: true,
+							});
+							this.handleTrueRedirection(link);
+						} else {
+							this.setState({
+								statut: 'Ce pseudo est déjà utilisé !',
+								pseudo: null
+							});
+						}
+					});
+				} else if (this.state.pseudo != null && this.state.checkPseudo) {
+					this.handleTrueRedirection(link);
 				}
 				break;
 
 			case 'privateRoom':
 				switch (link) {
 					case 'equipeChoose':
-						this.state.codePrivateRoom !== null ? this.handleTrueRedirection(link) : false;
+						this.state.codePrivateRoom != null ? this.handleTrueRedirection(link) : false;
 						break;
 
 					case 'privateRoomConfig':
@@ -122,7 +161,7 @@ export default class Index extends React.Component {
 			case 'equipeChoose':
 				switch (link) {
 					case 'fileAttente':
-						if (this.state.equipeChoose !== null) {
+						if (this.state.equipeChoose != null && this.state.codePrivateRoom == null) {
 							this.socketClient.startPublicPartie(this.state.pseudo, this.state.equipeChoose, data => {
 								this.setState({
 									codePrivateRoom: data.codeRoom,
@@ -132,6 +171,28 @@ export default class Index extends React.Component {
 									listPollueurs: data.listPollueurs,
 								});
 								this.handleTrueRedirection(link);
+							});
+						} else if (this.state.equipeChoose != null && this.state.codePrivateRoom != null) {
+							this.socketClient.startPrivatePartie(this.state.pseudo, this.state.equipeChoose, this.state.codePrivateRoom, data => {
+								if (data.statut == 'success') {
+									this.setState({
+										nombreJoueurCo: data.NbrJoueursCo,
+										nombreJoueurMax: data.NbrJoueursMax,
+										listEcolos: data.listEcolos,
+										listPollueurs: data.listPollueurs,
+									});
+									this.handleTrueRedirection(link);
+								} else if (data.statut == 'isFull' || data.statut == 'notFound') {
+									let msg = null;
+									msg = data.statut == 'isFull' ? 'Partie déjà remplis !' : 'La partie n\'a pas été  trouvé vérifié le code !'
+									this.setState({
+										statut: msg
+									});
+								} else {
+									this.setState({
+										statut: 'Une erreur est survenue !'
+									});
+								}
 							});
 						}
 						break;
@@ -159,7 +220,6 @@ export default class Index extends React.Component {
 			if (this.state.currentLink === 'fileAttente') {
 				this.socketClient.leaveGame(this.state.pseudo);
 				this.setState({
-					codePrivateRoom: null,
 					nombreJoueurCo: 0,
 					nombreJoueurMax: 4,
 					listEcolos: null,
@@ -171,6 +231,8 @@ export default class Index extends React.Component {
 			this.history.splice(this.history.length - 1, 1);
 			window.history.pushState(previousState, previousState, `/${previousState}`);
 			this.setState({
+				statut: null,
+				codePrivateRoom: (previousState === 'privateRoom' || previousState === 'equipeChoose') ? null : this.state.codePrivateRoom,
 				blurBackground: (previousState === 'fileAttente' || previousState === 'equipeChoose') ? true : false,
 				currentLink: previousState
 			});
@@ -181,7 +243,15 @@ export default class Index extends React.Component {
 	/* Rapel: this.setState appel automatique render() */
 	handleChangePseudo = (newPseudo) => {
 		if (newPseudo == '') newPseudo = null;
+		if (this.state.checkPseudo == true) {
+			console.log(this.state.pseudo);
+			this.socketClient.deletePseudo(this.state.pseudo);
+			this.setState({
+				checkPseudo: false,
+			});
+		}
 		this.setState({
+			statut: null,
 			pseudo: newPseudo
 		});
 	}
@@ -227,6 +297,7 @@ export default class Index extends React.Component {
 		switch (this.state.currentLink) {
 			case 'home':
 				form = <Home initInput={this.state.pseudo}
+							 haveCode={this.state.codePrivateRoom !== null ? true : false }
 							 redirectTo={this.handleRedirect}
 							 checkPseudo={this.handleChangePseudo} 
 							 buttonStat={this.state.pseudo === null ? true : false} />;
@@ -261,7 +332,7 @@ export default class Index extends React.Component {
 
 			case 'fileAttente':
 				form = <FileAttente redirectTo={this.handleRedirect}
-									codeRoom={this.state.codePrivateRoom}
+									codeRoom={this.state.checkPrivateRoom ? this.state.codePrivateRoom : null}
 									NbrJoueursCo={this.state.nombreJoueurCo}
 									NbrJoueursMax={this.state.nombreJoueurMax}
 									listEcolos={this.state.listEcolos}
@@ -273,11 +344,20 @@ export default class Index extends React.Component {
 				break;
 		}
 
+		let statut = false;
+		if (this.state.statut == false) {
+			statut = <LittleLabel>Impossible de rejoindre le serveur de jeu ...</LittleLabel>
+		} else if (this.state.statut != true) {
+			statut = <LittleLabel>{this.state.statut}</LittleLabel>
+		}
+
 		return (
 			<Container center blur={this.state.blurBackground} >
-				<p>Statut de connexion: {this.state.statut ? 'en ligne' : 'hors ligne'}</p>
 				{form}
+				{statut}
 			</Container>
 		)
 	}
 }
+
+export default Index;

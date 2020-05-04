@@ -79,7 +79,8 @@ class Jeu extends React.Component {
                 </Spacer>
 
                 <Carte
-                
+
+                   
                 />
 
             </Container>
@@ -87,9 +88,4 @@ class Jeu extends React.Component {
     }
 }
 
-Jeu.getInitialProps = props => {
-    const { payload } = props.query
-    return { payload }
-}
-
-export default withRouter(Jeu)
+export default withRouter(Jeu);
