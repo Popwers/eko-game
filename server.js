@@ -1,132 +1,155 @@
-const express = require("express");
+const app = require("express")();
 const http = require("http");
-const dotenv = require("dotenv");
+const server = http.createServer(app);
+const io = require("socket.io")(server);
 const next = require("next");
+const dotenv = require("dotenv");
 
 dotenv.config();
 const port = normalizePort(process.env.PORT || 3000);
 
 const dev = process.env.NODE_ENV !== "production";
-const app = next({ dev });
-const handle = app.getRequestHandler();
+const nextApp = next({ dev });
+const nextHandle = nextApp.getRequestHandler();
 
 // Charge les class
 const Partie = require('./private/class/Partie.js');
 
 // Creer la liste des Parties Publics
-const publicList = new Array();
+let publicList = new Array();
 
 // Creer la liste des Parties Privé
-const privateList = new Array();
+let privateList = new Array();
 
-app.prepare().then(() => {
-	const serverApp = express();
-	const server = http.createServer(serverApp);
-	const io = require("socket.io")(server);
+// Liste des joueurs
+let listAllPlayers = new Array();
 
-	server.get('/jeu', (req, res) => {
-		return app.render(req, res, "/jeu", req.query);
+nextApp.prepare().then(() => {
+
+	// Route qui écoute : Renvoie vers l'interface de jeu
+	app.get('/jeu', (req, res) => {
+		return nextApp.render(req, res, "/jeu", req.query);
 	});
 
 	// Route qui écoute : Renvoie vers la page demandé ou 404
-	// Ici je l'ai modifié pour toujours retournée a l'index pour l'instant
-	server.all("*", (req, res) => {
-		//return handle(req, res);
-		return app.render(req, res, "/index", req.query);
+	// Ici je l'ai modifié pour toujours retournée a l'index
+	app.all("*", (req, res) => {
+		//return nextHandle(req, res);
+		return nextApp.render(req, res, "/index", req.query);
 	});
 
-	io.on("connection", (clientSocket) => {
-		console.log("Nouveau joueur connecté");
+	io.on("connection", (socket) => {
+		socket.emit('connexion', true, (err, player) => {
+			console.log(listAllPlayers);
+			console.log(player.name);
+			
+			listAllPlayers.forEach(playerElement => {
+				if (playerElement == player.name) {
+					publicList.forEach(partieSearch => {
+						if (partieSearch.code == player.code) {
+							socket._partie = partieSearch;
+						}
+					});
 
-		clientSocket.emit('connexion');
+					privateList.forEach(partieSearch => {
+						if (partieSearch.code == player.code) {
+							socket._partie = partieSearch;
+						}
+					});
 
+					console.log(socket._partie);
 
-		clientSocket.on("createGame", function () {
-			console.log("user want partie");
-
-			var data = {
-				plateau: createUrl(5),
-				joueur: createUrl(5),
-			};
-
-			partiesEnCours.push(new Partie(app, clientSocket, data));
+					socket._player = player.name;
+					console.log(`${player.name} est à nouveau connecté !`);
+					return;
+				}
+			});
+			console.log('Nouveau joueurs !');
 		});
 
-		clientSocket.on('joinPublicGame', (player, callback) => {
+		socket.on('joinPublicGame', (player, callback) => {
 			const equipe = player.equipe;
 			const name = player.name;
-			let room = null;
+			let partie = null;
 
-			/*// On parcours toutes les rooms pour y ajouter le joueur
-			for (let i = 0; i < listeDesJeux.length; i++) {
-				console.log("On cherche une jeu ");
-				const leJeu = listeDesJeux[i];
-				if (!leJeu.isPrivate && !leJeu.isReady) {
-					// La jeu n'est pas privée
-					// On a le droit d'ajouter le joueur
+			// On parcours toutes les partie pour y ajouter le joueur
+			console.log("Recherche d'une partie");
+			publicList.forEach(game => {
+				if (!game.isReady) {
 					if (equipe === "ecologiste") {
-						// On ajoute le joueur si il y a de la place
-						room = leJeu.ajouterEcologiste(joueur);
+						partie = game.ajouterEcologiste(name);
 					} else {
-						room = leJeu.ajouterPollueur(joueur);
+						partie = game.ajouterPollueur(name);
 					}
 				}
 
-				if (room || false) {
-					// On plus besoin de regarder les jeux suivantes
-					break; // on quitte la boucle
-				}
-			}
-			console.log("Jeu trouvée : ", room);
+				if (partie || false) return; // Plus besoin de regarder les jeux suivantes, on quitte la boucle
+			});
 
+			console.log("Jeu trouvée : ", partie);
 
-			if (!room) {
-				// On a pas trouvé de jeu dispo pour ce joueur !!!
-				// On crée une jeu
-				// ! -> veut sire NON [variable]
-				const nom = "Jeu_" + Utility.getRandomInt(1, 99999);
-				console.log("On crée une nouvelle jeu : " + nom);
-				room = new Jeu(nom, MAX_JOUEUR, MAX_TOUR);
+			// Pas de partie disponible création d'une partie
+			if (!partie) {
+				console.log("On crée une nouvelle partie");
+				partie = new Partie(process.env.MAX_JOUEUR, process.env.MAX_TOUR);
 				if (equipe === "ecologiste") {
-					// On ajoute le joueur aux ecolo
-					room.ajouterEcologiste(joueur);
+					partie.ajouterEcologiste(name);
 				} else {
-					// On ajoute le joueur aux pollueur
-					room.ajouterPollueur(joueur);
+					partie.ajouterPollueur(name);
 				}
-				listeDesJeux.push(room);
-
+				publicList.push(partie);
 			}
 
-			// ICI : On a obligatoirement une room pour le joueur
-			//console.log(listeDesJeux);
-
-			// socket.join : Le Joueur rejoin le channel socket.io "Jeu_xxxx"
+			// socket.join : Le Joueur rejoin le channel socket.io "Partie: xxxxx"
 			// Ainsi il n'ecoutera que les message de ce canal
 			// Chaque jeu sera donc isolée
-			socket.join(room.nom);
+			socket.join(partie.code);
+			listAllPlayers.push(name);
 
-			// On sauvegarde le joueur actuel dans la socket
-			socket._room = room;
-			socket._joueur = joueur;
+			// On associe la partie à la socket
+			socket._partieConnexion = partie;
 
-
-			// On appel la fonction Eko.onLogged() coté client
-			callback(room);
+			// On appel la fonction de callback coté client
+			const dataCallback = {
+				codeRoom: partie.code,
+				NbrJoueursCo: partie.listeEcologiste.length + partie.listePollueur.length,
+				NbrJoueursMax: partie.nbrJoueurMax,
+				listEcolos: partie.listeEcologiste,
+				listPollueurs: partie.listePollueur,
+			};
+			callback(dataCallback);
 
 			// On envoi un message a tout les utilisateurs
 			// a l'exception de celui qui a envoyé le message ekoLogin
-			socket.broadcast.to(room.nom).emit('ekoNewPlayer', room);
+			const dataPartie = {
+				NbrJoueursCo: partie.listeEcologiste.length + partie.listePollueur.length,
+				listEcolos: partie.listeEcologiste,
+				listPollueurs: partie.listePollueur,
+			};
+			socket.broadcast.to(partie.code).emit('newPlayer', dataPartie);
 
-			if (room.isReady) {
-				socket.broadcast.to(room.nom).emit('ekoBeginGame');
-				socket.emit('ekoBeginGame');
+			if (partie.isReady) {
+				socket.broadcast.to(partie.code).emit('gameReady');
+				socket.emit('gameReady');
+			}
+		});
 
-			}*/
+		socket.on('leaveGame', player => {
+			partie = socket._partieConnexion;
+			if (partie || false) {
+				partie.retirerJoueur(player);
+				listAllPlayers = listAllPlayers.filter(item => item !== player);
+				const dataCallback = {
+					NbrJoueursCo: partie.listeEcologiste.length + partie.listePollueur.length,
+					listEcolos: partie.listeEcologiste,
+					listPollueurs: partie.listePollueur,
+				};
+				socket.broadcast.to(partie.code).emit('playerLeave', dataCallback);
+			}
 		});
 	});
 
-	serverApp.listen(port, (err) => {
+	server.listen(port, (err) => {
 		if (err) throw err;
 		console.log(`> Ready on http://localhost:${port}`);
 	});
@@ -154,19 +177,4 @@ function normalizePort(val) {
 	}
 
 	return false;
-}
-
-/**
- * Generate random URL
- */
-
-function createUrl(length) {
-	var result = "";
-	var characters =
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	var charactersLength = characters.length;
-	for (var i = 0; i < length; i++) {
-		result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	}
-	return result;
 }

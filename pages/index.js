@@ -1,4 +1,5 @@
 import React from 'react';
+import Router from 'next/router'
 import Container from "../components/layout/Container";
 import Home from '../components/views/home';
 import PrivateRoom from '../components/views/privateRoom';
@@ -7,20 +8,20 @@ import PrivateRoomCode from '../components/views/privateRoomCode';
 import EquipeChoose from '../components/views/equipeChoose';
 import FileAttente from '../components/views/fileAttente';
 import SocketClient from "../lib/socketClient";
-
 export default class Index extends React.Component {
 
 	/* Définis les props initiales */
 	static defaultProps = {
 		initialeEquipe: null,
 		initialeNombreTours: 4,
-		initialeNombreJoueurs: 4,
+		initialeNombreJoueurMaxs: 4,
 		initialenombreJoueurCo: 0,
 		initailBlurBackground: false,
 		initialCodePrivateRoom: null,
 		initialPseudo: null,
 		initialLink: 'home',
 		stat: false,
+		initialList: [],
 	}
 
 	constructor(props) {
@@ -31,10 +32,12 @@ export default class Index extends React.Component {
 			blurBackground: props.initailBlurBackground,
 			nombreTourMax: props.initialeNombreTours,
 			nombreJoueurCo: props.initialenombreJoueurCo,
-			nombreJoueur: props.initialeNombreJoueurs,
+			nombreJoueurMax: props.initialeNombreJoueurMaxs,
 			codePrivateRoom: props.initialCodePrivateRoom,
 			pseudo: props.initialPseudo,
 			currentLink: props.initialLink,
+			listEcolos: props.initialList,
+			listPollueurs: props.initialList,
 		};
 
 		this.history = [];
@@ -45,9 +48,33 @@ export default class Index extends React.Component {
 	/* Attache les évenements de connexion avec le serveur */
 	componentDidMount() {
 		window.addEventListener("popstate", this.handlePopState);
-		this.socketClient.subscribtoConnexion((err, data) => this.setState({
-			statut: data,
-		}));
+		this.socketClient.subscribeConnexion((data) => {
+			this.setState({
+				statut: data,
+			});
+
+			const dataToServer = { name: 'null', code: 'null' };
+			return dataToServer;
+		});
+
+		this.socketClient.subscribePlayersStats(data => {
+			console.log(data);
+			this.setState({
+				nombreJoueurCo: data.NbrJoueursCo,
+				listEcolos: data.listEcolos,
+				listPollueurs: data.listPollueurs,
+			});
+		});
+
+		this.socketClient.subscribeStartGame(() => {
+			Router.push({ 
+				pathname: '/jeu', 
+				query: {
+					codePartie: this.state.codePrivateRoom,
+					pseudo: this.state.pseudo,
+				}
+			});
+		});
 	}
 
 	/* Fonction de attaché au tous lien, pour vérifier les datas envoyées
@@ -95,7 +122,18 @@ export default class Index extends React.Component {
 			case 'equipeChoose':
 				switch (link) {
 					case 'fileAttente':
-						this.state.equipeChoose !== null ? this.handleTrueRedirection(link) : false;
+						if (this.state.equipeChoose !== null) {
+							this.socketClient.startPublicPartie(this.state.pseudo, this.state.equipeChoose, data => {
+								this.setState({
+									codePrivateRoom: data.codeRoom,
+									nombreJoueurCo: data.NbrJoueursCo,
+									nombreJoueurMax: data.NbrJoueursMax,
+									listEcolos: data.listEcolos,
+									listPollueurs: data.listPollueurs,
+								});
+								this.handleTrueRedirection(link);
+							});
+						}
 						break;
 				}
 				break;	
@@ -118,6 +156,17 @@ export default class Index extends React.Component {
 	/* Il est redirigé vers l'ancienne vue */
 	handlePopState = () => {
 		if (this.history.length > 0) {
+			if (this.state.currentLink === 'fileAttente') {
+				this.socketClient.leaveGame(this.state.pseudo);
+				this.setState({
+					codePrivateRoom: null,
+					nombreJoueurCo: 0,
+					nombreJoueurMax: 4,
+					listEcolos: null,
+					listPollueurs: null,
+				});
+			}
+
 			const previousState = this.history[this.history.length - 1];
 			this.history.splice(this.history.length - 1, 1);
 			window.history.pushState(previousState, previousState, `/${previousState}`);
@@ -146,9 +195,9 @@ export default class Index extends React.Component {
 	}
 
 	/* Fonction de mise à jours du Nombre de joueur sur PrivateRoom */
-	handleChangeNombreJoueur = (newJoueurs) => {
+	handleChangeNombreJoueurMax = (newJoueurs) => {
 		this.setState({
-			nombreJoueur: newJoueurs
+			nombreJoueurMax: newJoueurs
 		});
 	}
 
@@ -192,10 +241,10 @@ export default class Index extends React.Component {
 
 			case 'privateRoomConfig':
 				form = <PrivateRoomConfig initRange={this.state.nombreTourMax}
-										  initCheck={this.state.nombreJoueur}
+										  initCheck={this.state.nombreJoueurMax}
 										  redirectTo={this.handleRedirect}
 										  changeTourMax={this.handleChangeToursMax}
-										  changeJoueursMax={this.handleChangeNombreJoueur} />;
+										  changeJoueursMax={this.handleChangeNombreJoueurMax} />;
 				break;
 
 			case 'privateRoomCode':
@@ -214,7 +263,9 @@ export default class Index extends React.Component {
 				form = <FileAttente redirectTo={this.handleRedirect}
 									codeRoom={this.state.codePrivateRoom}
 									NbrJoueursCo={this.state.nombreJoueurCo}
-									NbrJoueursMax={this.state.nombreJoueur} />;
+									NbrJoueursMax={this.state.nombreJoueurMax}
+									listEcolos={this.state.listEcolos}
+									listPollueurs={this.state.listPollueurs} />;
 				break;
 
 			default:

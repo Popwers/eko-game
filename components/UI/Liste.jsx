@@ -14,22 +14,28 @@ const Li = styled.li`
 `
 
 export default function Liste(props) {
-    const itemVide = <Li> . . . </Li>;
-    const listItems = [];
+    let listItems = [];
 
     if (props.nbrJoueursMax) {
+        const nbrJoueurs = props.nbrJoueursMax / 2;
         if (props.array) {
-            listItems = props.array.map((element, index) => <Li key={index}>{element}</Li>);
+            let listPlayer = props.array;
+            if (listPlayer.length < nbrJoueurs) {
+                for (let i = -1; i < nbrJoueurs - listPlayer.length; i++) {
+                    listPlayer.push('. . .');
+                }
+            }
+            listItems = listPlayer.map((element, index) => <Li key={index}>{element}</Li>);
         } else {
-            for (let i = 0; i < props.nbrJoueursMax; i++) {
-                listItems.push(itemVide);
+            for (let i = 0; i < nbrJoueurs; i++) {
+                listItems.push(<Li key={i}> . . . </Li>);
             }
         }
     } else {
         if (props.array) {
-            listItems = props.array.map((element) => <Li>{element}</Li>);
+            listItems = props.array.map((element, index) => <Li key={index}>{element}</Li>);
         } else {
-            listItems.push(itemVide);
+            listItems.push(<Li key={i}> . . . </Li>);
         }
     }
 

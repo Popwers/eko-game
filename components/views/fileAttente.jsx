@@ -24,7 +24,11 @@ export default (props) => {
             </Spacer>
 
             <Spacer>
-                <ListeEquipe nombreJoueursMax={props.NbrJoueursMax} />
+                <ListeEquipe
+                    nombreJoueursMax={props.NbrJoueursMax} 
+                    listEcolos={props.listEcolos}
+                    listPollueurs={props.listPollueurs}
+                />
             </Spacer>
         </>
     );

@@ -46,7 +46,7 @@ export default function ListeEquipe(props){
                 <TitreListeE>
                     Les Ecolos
                 </TitreListeE>
-                <Liste array={props.array} nbrJoueursMax={props.nombreJoueursMax} />
+                <Liste array={props.listEcolos} nbrJoueursMax={props.nombreJoueursMax} />
             </Col>
             <ColCenter dividCol={3}>
                 <Separateur src={Eclair}/>
@@ -55,7 +55,7 @@ export default function ListeEquipe(props){
                 <TitreListeP>
                     Les Pollueurs
                 </TitreListeP>
-                <Liste array={props.array} nbrJoueursMax={props.nombreJoueursMax} />
+                <Liste array={props.listPollueurs} nbrJoueursMax={props.nombreJoueursMax} />
             </Col>
         </ContainerListes>
     )
