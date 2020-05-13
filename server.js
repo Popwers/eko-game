@@ -12,13 +12,13 @@ const dev = process.env.NODE_ENV !== "production";
 const nextApp = next({ dev });
 const nextHandle = nextApp.getRequestHandler();
 
-// Charge les class
+// Charge la class Partie qui gère les jeux
 const Partie = require('./private/class/Partie.js');
 
-// Creer la liste des Parties Publics
+// Liste des Parties Publics
 let publicList = new Array();
 
-// Creer la liste des Parties Privé
+// Liste des Parties Privé
 let privateList = new Array();
 
 // Liste des joueurs
@@ -45,44 +45,45 @@ nextApp.prepare().then(() => {
 			console.log('Recherche dans la base de donnée des joueurs ...');
 			let searchJoueur = false;
 
-			listAllPlayers.every(playerElement => {
+			for (let playerElement of listAllPlayers) {
 				if (playerElement == player.name) {
-					publicList.every(partieSearch => {
+					for (let partieSearch of publicList) {
 						if (partieSearch.code == player.code) {
 							socket._partie = partieSearch;
-							return false;
+							break;
 						}
-					});
+					}
 
-					privateList.every(partieSearch => {
+					for (let partieSearch of privateList) {
 						if (partieSearch.code == player.code) {
 							socket._partie = partieSearch;
-							return false;
+							break;
 						}
-					});
+					}
 
 					console.log(socket._partie);
 
 					socket._player = player.name;
 					console.log(`${player.name} est à nouveau connecté !`);
 					searchJoueur = true;
-					return false;
+					break;
 				}
-			});
+			}
 
 			if (!searchJoueur) {
 				console.log('Nouveau joueur !');
 			}
 		});
 
+		/* Vérifie si le nom du joueur est diponible */
 		socket.on('checkPseudo', (playerName, callback) => {
 			let nameIsFree = true;
-			listAllPlayers.every(player => {
+			for (let player of listAllPlayers) {
 				if (player == playerName) {
 					nameIsFree = false;
-					return false;
+					break;
 				}
-			});
+			}
 
 			if (nameIsFree) listAllPlayers.push(playerName);
 			if (nameIsFree) {
@@ -92,14 +93,16 @@ nextApp.prepare().then(() => {
 			callback(nameIsFree);
 		});
 
+		/* Libére un pseudo si le joueur change de nom  */
 		socket.on('leavePseudo', (playerName) => {
 			listAllPlayers = listAllPlayers.filter(item => item !== playerName);
 			console.log('Pseudo : ' + playerName + ' libéré !');
 		});
 
+		/* Le joueur quitte la partie en cours */
 		socket.on('leaveGame', player => {
 			partie = socket._partieConnexion;
-			if (partie || false) {
+			if (partie) {
 				partie.retirerJoueur(player);
 				listAllPlayers = listAllPlayers.filter(item => item !== player);
 				console.log(player + ' a quitté la partie ' + partie.code);
@@ -112,6 +115,7 @@ nextApp.prepare().then(() => {
 			}
 		});
 
+		/* Ajoute un joueur à une partie public */
 		socket.on('joinPublicGame', (player, callback) => {
 			const equipe = player.equipe;
 			const name = player.name;
@@ -120,7 +124,7 @@ nextApp.prepare().then(() => {
 			console.log(`${name} recherche une partie ...`);
 
 			// On parcours toutes les partie pour y ajouter le joueur
-			publicList.every(game => {
+			for (let game of publicList) {
 				if (!game.isReady) {
 					if (equipe === "ecologiste") {
 						partie = game.ajouterEcologiste(name);
@@ -129,8 +133,8 @@ nextApp.prepare().then(() => {
 					}
 				}
 
-				if (partie || false || partie != null) return false; // Plus besoin de regarder les jeux suivantes, on quitte la boucle
-			});
+				if (partie || false) break; // Plus besoin de regarder les jeux suivantes, on quitte la boucle
+			}
 
 			console.log("Partie trouvée : ", partie);
 
@@ -183,6 +187,7 @@ nextApp.prepare().then(() => {
 			}
 		});
 
+		/* Ajoute un joueur à une partie privé */
 		socket.on('joinPrivateGame', (player, callback) => {
 			const equipe = player.equipe;
 			const name = player.name;
@@ -193,7 +198,7 @@ nextApp.prepare().then(() => {
 			console.log(`${name} recherche la partie privé ${codePart} ...`);
 
 			let isFull = false;
-			privateList.every(game => {
+			for (let game of privateList) {
 				if (!game.isReady && game.code == codePart) {
 					if (equipe === "ecologiste") {
 						partie = game.ajouterEcologiste(name);
@@ -206,8 +211,8 @@ nextApp.prepare().then(() => {
 					}
 				}
 
-				if (partie || false || partie != null) return false; // Plus besoin de regarder les jeux suivantes, on quitte la boucle
-			});
+				if (partie || false) break; // Plus besoin de regarder les jeux suivantes, on quitte la boucle
+			}
 
 			// Pas de partie trouvé ou la partie est déjà pleine !
 			if (!partie) {
@@ -265,6 +270,7 @@ nextApp.prepare().then(() => {
 			}
 		});
 
+		/* Créer une partie privé et assigne le joueur hote */
 		socket.on('createPrivateGame', (player, callback) => {
 		});
 	});
